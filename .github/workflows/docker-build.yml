@@ -38,7 +38,7 @@ jobs:
       - name: Extract metadata (tags, labels) for container
         if: ${{ github.event_name == 'push' }}
         id: meta-push
-        uses: docker/metadata-action@c4ee3adeed93b1fa6a762f209fb01608c1a22f1e
+        uses: docker/metadata-action@818d4b7b91585d195f67373fd9cb0332e31a7175
         with:
           images: ghcr.io/${{ github.repository }}
           # https://github.com/docker/metadata-action#latest-tag
@@ -48,7 +48,7 @@ jobs:
       - name: Extract metadata (tags, labels) for container
         if: ${{ github.event_name == 'release' && github.event.action == 'created' }}
         id: meta-release
-        uses: docker/metadata-action@c4ee3adeed93b1fa6a762f209fb01608c1a22f1e
+        uses: docker/metadata-action@818d4b7b91585d195f67373fd9cb0332e31a7175
         with:
           images: ghcr.io/${{ github.repository }}
           # https://github.com/docker/metadata-action#latest-tag
