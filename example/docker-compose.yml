@@ -1,0 +1,9 @@
+version: "3.9"
+services:
+  shelly-cw:
+    #image: ghcr.io/yggdrion/pym:latest
+    image: pym:latest
+    volumes:
+      - ./ping.yml:/app/ping.yml
+    env_file:
+      - .env
