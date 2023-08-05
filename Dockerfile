@@ -1,5 +1,5 @@
 # Use the Python base image
-FROM python:3
+FROM python:3.9
 
 # Install supervisor and other necessary tools
 RUN pip install supervisor
