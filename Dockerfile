@@ -8,8 +8,7 @@ RUN pip install supervisor
 WORKDIR /app
 
 # Copy the Python files to the container
-COPY ping.py /app/
-COPY shelly.py /app/
+COPY *.py /app/
 
 # Copy the requirements file to the container
 COPY requirements.txt /app/

@@ -4,5 +4,6 @@ services:
     image: ghcr.io/yggdrion/pym:latest
     volumes:
       - ./ping.yml:/app/ping.yml
+      - ./squad.yml:/app/ping.yml
     env_file:
       - .env
