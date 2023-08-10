@@ -1,3 +1,11 @@
 devices:
+  - name: sqds
+    ip: 45.145.224.34
   - name: wls1
     ip: 45.91.103.47
+  - name: dsg
+    ip: 194.26.183.179
+  - name: gsg
+    ip: 5.180.67.7
+  - name: gks
+    ip: 185.248.141.41
