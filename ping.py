@@ -41,10 +41,11 @@ def measure(ip, name):
 
     response_time = ping(ip)
 
-    if response_time is not None:
-        print(f"Response time: {ip} {response_time} ms")
-    else:
-        print("Ping request timed out")
+    ## DEBUG
+    # if response_time is not None:
+    #     print(f"Response time: {ip} {response_time} ms")
+    # else:
+    #     print("Ping request timed out")
 
     measurement = 'ping' 
     tags = {'name': name}
@@ -67,12 +68,14 @@ def measure(ip, name):
 
 
 # main loop
-while True:
-    with open('ping.yml', 'r') as file:
-        yaml_data = yaml.safe_load(file)
+with open('ping.yml', 'r') as file:
+    yaml_data = yaml.safe_load(file)
 
-    devices = yaml_data['devices']
+devices = yaml_data['devices']
+
+while True:
     
+    print("Ping: Thread")
     threads = []
     for device in devices:
         name = device['name']
@@ -84,5 +87,4 @@ while True:
     for thread in threads:
         thread.join()
         
-    print("Thread has finished")
-    time.sleep(1)
+    time.sleep(3)

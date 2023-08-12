@@ -86,6 +86,7 @@ if __name__ == "__main__":
 
         squad_data = []
 
+        print("Squad: Thread")
         with ThreadPoolExecutor(max_workers=5) as executor:
             for device in devices:
                 thread_return = executor.submit(a2s_info, device['ip'])
@@ -93,9 +94,9 @@ if __name__ == "__main__":
                 tmp_dict['name'] = device['name']
                 squad_data.append(tmp_dict)
 
-
+        print("Squad: Influx")
         for data in squad_data:
-            print(f"{data['name']}: {data['player_count']}")
+            # print(f"{data['name']}: {data['player_count']}")
             influx_write(data['name'], data['player_count'])
             
-        time.sleep(60)
+        time.sleep(30)

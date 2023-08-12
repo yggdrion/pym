@@ -1,9 +1,11 @@
 version: "3.9"
 services:
   pym:
-    image: ghcr.io/yggdrion/pym:latest
+    build:
+      context: .
+    # image: pym
     volumes:
       - ./ping.yml:/app/ping.yml
-      - ./squad.yml:/app/ping.yml
+      - ./squad.yml:/app/squad.yml
     env_file:
       - .env
