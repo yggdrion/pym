@@ -6,9 +6,17 @@ updates:
       interval: "daily"
     assignees:
       - "r4b2"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "daily"
     assignees:
       - "r4b2"
+    groups:
+      python:
+        patterns:
+          - "*"
