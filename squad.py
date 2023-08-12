@@ -77,7 +77,7 @@ def influx_write(name, player_count):
 
 if __name__ == "__main__":
 
-    with open('example/squad.yml', 'r') as file:
+    with open('squad.yml', 'r') as file:
         yaml_data = yaml.safe_load(file)
 
 
