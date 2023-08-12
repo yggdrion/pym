@@ -68,7 +68,7 @@ def measure(ip, name):
 
 # main loop
 while True:
-    with open('ping.yml', 'r') as file:
+    with open('example/ping.yml', 'r') as file:
         yaml_data = yaml.safe_load(file)
 
     devices = yaml_data['devices']

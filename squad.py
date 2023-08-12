@@ -5,6 +5,7 @@ import os
 import sys
 from dotenv import load_dotenv
 from influxdb import InfluxDBClient
+import time
 
 # use dotenv to load environment variables from .env file
 if os.path.exists(".env"):
@@ -32,7 +33,7 @@ except ValueError as e:
 def a2s_info(host):
     return_dict = {}
     address = (host, 27165)
-    info = a2s.info(address)
+    info = a2s.info(address, timeout=6)
     rules = a2s.rules(address)
     players = a2s.players(address)
     
@@ -76,21 +77,25 @@ def influx_write(name, player_count):
 
 if __name__ == "__main__":
 
-    with open('squad.yml', 'r') as file:
+    with open('example/squad.yml', 'r') as file:
         yaml_data = yaml.safe_load(file)
 
-    devices = yaml_data['devices']
 
-    squad_data = []
+    while True:
+        devices = yaml_data['devices']
 
-    with ThreadPoolExecutor(max_workers=5) as executor:
-        for device in devices:
-            thread_return = executor.submit(a2s_info, device['ip'])
-            tmp_dict = thread_return.result()
-            tmp_dict['name'] = device['name']
-            squad_data.append(tmp_dict)
+        squad_data = []
+
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            for device in devices:
+                thread_return = executor.submit(a2s_info, device['ip'])
+                tmp_dict = thread_return.result()
+                tmp_dict['name'] = device['name']
+                squad_data.append(tmp_dict)
 
 
-    for data in squad_data:
-        print(f"{data['name']}: {data['player_count']}")
-        influx_write(data['name'], data['player_count'])
+        for data in squad_data:
+            print(f"{data['name']}: {data['player_count']}")
+            influx_write(data['name'], data['player_count'])
+            
+        time.sleep(60)
