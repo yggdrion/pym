@@ -114,6 +114,7 @@ if __name__ == "__main__":
 
     while True:
         # watt_usage = {}
+        print("Shelly: Thread")
         power_list = []
         with ThreadPoolExecutor(max_workers=5) as executor2:
             for web_server in web_servers:
@@ -121,7 +122,8 @@ if __name__ == "__main__":
                 #print(return_dict.result())
                 power_list.append(return_dict.result())
 
-        for i in power_list:
-            print(i)
+        # for i in power_list:
+        #     print(i)
+        print("Shelly: Influx")
         write_to_influx(power_list)
-        time.sleep(1)
+        time.sleep(3)

@@ -39,12 +39,19 @@ def measure(ip, name):
     client = InfluxDBClient(host=host, port=port)
     client.switch_database(database)
 
-    response_time = ping(ip)
+    try:
+        response_time = ping(ip, timeout=1)
+    except:
+        response_time = 0.2
 
-    if response_time is not None:
-        print(f"Response time: {ip} {response_time} ms")
-    else:
-        print("Ping request timed out")
+    response_time = float(response_time)
+
+    ## DEBUG
+    # if response_time is not None:
+    #     print(f"Response time: {ip} {response_time} ms")
+    # else:
+    #     print("Ping request timed out")
+
 
     measurement = 'ping' 
     tags = {'name': name}
@@ -60,19 +67,20 @@ def measure(ip, name):
         }
     ]
 
-
     client.write_points(data)
 
     client.close()
 
 
 # main loop
-while True:
-    with open('ping.yml', 'r') as file:
-        yaml_data = yaml.safe_load(file)
+with open('ping.yml', 'r') as file:
+    yaml_data = yaml.safe_load(file)
 
-    devices = yaml_data['devices']
+devices = yaml_data['devices']
+
+while True:
     
+    print("Ping: Thread")
     threads = []
     for device in devices:
         name = device['name']
@@ -84,5 +92,4 @@ while True:
     for thread in threads:
         thread.join()
         
-    print("Thread has finished")
-    time.sleep(1)
+    time.sleep(3)
