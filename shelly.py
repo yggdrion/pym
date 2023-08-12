@@ -121,7 +121,7 @@ if __name__ == "__main__":
                 #print(return_dict.result())
                 power_list.append(return_dict.result())
 
-        for i in power_list:
-            print(i)
+        # for i in power_list:
+        #     print(i)
         write_to_influx(power_list)
         time.sleep(1)
