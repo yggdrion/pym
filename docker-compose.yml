@@ -1,9 +1,7 @@
 version: "3.9"
 services:
   pym:
-    build:
-      context: .
-    # image: pym
+    image: pym
     volumes:
       - ./ping.yml:/app/ping.yml
       - ./squad.yml:/app/squad.yml
