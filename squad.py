@@ -1,34 +1,8 @@
 import a2s
 import yaml
 from concurrent.futures import ThreadPoolExecutor
-import os
-import sys
-from dotenv import load_dotenv
-from influxdb import InfluxDBClient
 import time
-
-# use dotenv to load environment variables from .env file
-if os.path.exists(".env"):
-    load_dotenv()
-
-# load environment variables
-def get_required_env_variables(var_names):
-    env_vars = {}
-    for var_name in var_names:
-        try:
-            env_vars[var_name] = os.environ[var_name]
-        except KeyError:
-            raise ValueError(f"Required environment variable '{var_name}' is not set.")
-    return env_vars
-
-# get required environment variables
-try:
-    env_vars = get_required_env_variables(['INFLUX_HOST', 'INFLUX_PORT', 'INFLUX_DB'])
-    print("Loaded environment variables:", env_vars)
-except ValueError as e:
-    print("Error:", str(e))
-    sys.exit(1)
-
+from src import influx
 
 def a2s_info(host, port):
     return_dict = {}
@@ -56,30 +30,6 @@ def a2s_info(host, port):
         return None
 
 
-def influx_write(name, player_count):
-    host = env_vars['INFLUX_HOST']
-    port = env_vars['INFLUX_PORT']
-    database = env_vars['INFLUX_DB'] 
-
-    client = InfluxDBClient(host=host, port=port)
-    client.switch_database(database)
-
-    measurement = 'squad_player_count' 
-    tags = {'name': name}
-
-    fields = {'player_count': player_count}
-
-    data = [
-        {
-            "measurement": measurement,
-            "tags": tags,
-            "fields": fields
-        }
-    ]
-
-    client.write_points(data)
-
-    client.close()
 
 if __name__ == "__main__":
 
@@ -88,24 +38,24 @@ if __name__ == "__main__":
 
 
     while True:
-        devices = yaml_data['devices']
+        server_list = yaml_data['devices']
 
         squad_data = []
 
         print("Squad: Thread")
         with ThreadPoolExecutor(max_workers=3) as executor:
-            for device in devices:
-                thread_return = executor.submit(a2s_info, device['ip'], device['port'])
+            for server in server_list:
+                thread_return = executor.submit(a2s_info, server['ip'], server['port'])
                 if thread_return.result() is None:
-                    print(f"Error: {device['name']}")
+                    print(f"Error: {server['name']}")
                     continue
                 tmp_dict = thread_return.result()
-                tmp_dict['name'] = device['name']
+                tmp_dict['name'] = server['name']
                 squad_data.append(tmp_dict)
 
         print("Squad: Influx")
         for data in squad_data:
-            # print(f"{data['name']}: {data['player_count']}")
-            influx_write(data['name'], data['player_count'])
+            #print(data)
+            influx.write('squad', {'name': data['name']}, {'player_count': data['player_count']})
             
         time.sleep(30)

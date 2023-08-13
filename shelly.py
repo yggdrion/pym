@@ -6,6 +6,7 @@ from influxdb import InfluxDBClient
 import os
 import sys
 from dotenv import load_dotenv
+from src import influx
 
 # use dotenv to load environment variables from .env file
 if os.path.exists(".env"):
@@ -84,36 +85,11 @@ def scan_local_network():
 
     return web_servers
 
-def write_to_influx(list):
-    host = env_vars['INFLUX_HOST']
-    port = env_vars['INFLUX_PORT']
-    database = env_vars['INFLUX_DB']
-
-    client = InfluxDBClient(host=host, port=port)
-    client.switch_database(database)
-
-
-    for i in list:
-        tags = {'name': i["name"], 'ip': i["ip"]}
-        fields = {'power': i["power"]}
-        data = [
-            {
-                "measurement": "power",
-                "tags": tags,
-                "fields": fields
-            }
-        ]
-
-        client.write_points(data)
-    client.close()
-
-
 if __name__ == "__main__":
     web_servers = scan_local_network()
 
 
     while True:
-        # watt_usage = {}
         print("Shelly: Thread")
         power_list = []
         with ThreadPoolExecutor(max_workers=5) as executor2:
@@ -122,8 +98,7 @@ if __name__ == "__main__":
                 #print(return_dict.result())
                 power_list.append(return_dict.result())
 
-        # for i in power_list:
-        #     print(i)
         print("Shelly: Influx")
-        write_to_influx(power_list)
-        time.sleep(3)
+        for shelly in power_list:
+            influx.write('shelly', {'name': shelly["name"], 'ip': shelly["ip"]}, {'power': shelly["power"]})
+        time.sleep(5)
