@@ -30,25 +30,35 @@ except ValueError as e:
     sys.exit(1)
 
 
-def a2s_info(host):
+def a2s_info(host, port):
     return_dict = {}
-    address = (host, 27165)
-    info = a2s.info(address, timeout=6)
-    rules = a2s.rules(address)
-    players = a2s.players(address)
-    
-    #print(info)
-    #print("")
-    #print(rules)
-    #print("")
-    #print(players)
-    #print("#######################")
+    try:
+        address = (host, port)
+        info = a2s.info(address, timeout=6)
+        # print(f"Got info for {host}:{port}")
+        rules = a2s.rules(address)
+        players = a2s.players(address)
+        #print(info)
+        #print("")
+        #print(rules)
+        #print("")
+        #print(players)
+        #print("#######################")
 
-    #for player in players:
-        #print(player.name)
-    return_dict['server_name'] = info.server_name
-    return_dict['player_count'] = info.player_count
-    return return_dict
+        #for player in players:
+            #print(player.name)
+
+        return_dict['server_name'] = info.server_name
+        return_dict['player_count'] = info.player_count
+        return return_dict
+    
+    except:
+        
+        # print(f"Failed to get info for {host}:{port}")
+        return_dict['server_name'] = "unknown"
+        return_dict['player_count'] = 0
+        return return_dict
+
 
 def influx_write(name, player_count):
     host = env_vars['INFLUX_HOST']
@@ -87,9 +97,9 @@ if __name__ == "__main__":
         squad_data = []
 
         print("Squad: Thread")
-        with ThreadPoolExecutor(max_workers=5) as executor:
+        with ThreadPoolExecutor(max_workers=3) as executor:
             for device in devices:
-                thread_return = executor.submit(a2s_info, device['ip'])
+                thread_return = executor.submit(a2s_info, device['ip'], device['port'])
                 tmp_dict = thread_return.result()
                 tmp_dict['name'] = device['name']
                 squad_data.append(tmp_dict)
