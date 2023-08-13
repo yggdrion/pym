@@ -1,34 +1,4 @@
 devices:
-  - name: sqds
-    ip: 45.145.224.34
-    port: 27165
   - name: wls1
     ip: 45.91.103.47
     port: 27165
-  - name: wls2
-    ip: 45.91.103.3
-    port: 27165
-  - name: dsg
-    ip: 194.26.183.179
-    port: 27165
-  - name: gsg
-    ip: 5.180.67.7
-    port: 27165
-  - name: gks
-    ip: 185.248.141.41
-    port: 27165
-  - name: sqe
-    ip: 194.26.183.43
-    port: 27169
-  - name: sqb
-    ip: 78.46.92.201
-    port: 27165
-  - name: gs1
-    ip: 45.91.103.41
-    port: 27165
-  - name: gs2
-    ip: 45.91.103.42
-    port: 27165
-  - name: sl
-    ip: 159.69.226.136
-    port: 27175
