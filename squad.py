@@ -34,7 +34,7 @@ def a2s_info(host, port):
     return_dict = {}
     try:
         address = (host, port)
-        info = a2s.info(address, timeout=6)
+        info = a2s.info(address, timeout=10)
         # print(f"Got info for {host}:{port}")
         rules = a2s.rules(address)
         players = a2s.players(address)
@@ -53,11 +53,7 @@ def a2s_info(host, port):
         return return_dict
     
     except:
-        
-        # print(f"Failed to get info for {host}:{port}")
-        return_dict['server_name'] = "unknown"
-        return_dict['player_count'] = 0
-        return return_dict
+        return None
 
 
 def influx_write(name, player_count):
@@ -100,6 +96,9 @@ if __name__ == "__main__":
         with ThreadPoolExecutor(max_workers=3) as executor:
             for device in devices:
                 thread_return = executor.submit(a2s_info, device['ip'], device['port'])
+                if thread_return.result() is None:
+                    print(f"Error: {device['name']}")
+                    continue
                 tmp_dict = thread_return.result()
                 tmp_dict['name'] = device['name']
                 squad_data.append(tmp_dict)
