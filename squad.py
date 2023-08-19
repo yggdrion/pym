@@ -31,9 +31,9 @@ def a2s_info(name, host, port):
         return_dict['team_one'] = rules['TeamOne_s'].split("_")[-1]
         return_dict['team_two'] = rules['TeamTwo_s'].split("_")[-1]
         
-        for i in return_dict:
-            print(f"{i}: {return_dict[i]}")
-        print("#######################")        
+        # for i in return_dict:
+        #     print(f"{i}: {return_dict[i]}")
+        # print("#######################")        
 
         #print(return_dict)
 

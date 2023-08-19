@@ -25,7 +25,7 @@ def write(measurement: str, tags: dict, fields: dict) -> None:
     host = env_vars['INFLUX_HOST']
     port = env_vars['INFLUX_PORT']
     database = env_vars['INFLUX_DB'] 
-    database = 'test'
+    database = 'data'
 
     client = InfluxDBClient(host=host, port=port)
     client.switch_database(database)
