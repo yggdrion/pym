@@ -2,33 +2,10 @@ import requests
 import socket
 from concurrent.futures import ThreadPoolExecutor
 import time
-from influxdb import InfluxDBClient
-import os
-import sys
-from dotenv import load_dotenv
 from src import influx
+from src import env  
 
-# use dotenv to load environment variables from .env file
-if os.path.exists(".env"):
-    load_dotenv()
-
-# load environment variables
-def get_required_env_variables(var_names):
-    env_vars = {}
-    for var_name in var_names:
-        try:
-            env_vars[var_name] = os.environ[var_name]
-        except KeyError:
-            raise ValueError(f"Required environment variable '{var_name}' is not set.")
-    return env_vars
-
-# get required environment variables
-try:
-    env_vars = get_required_env_variables(['INFLUX_HOST', 'INFLUX_PORT', 'INFLUX_DB', 'IP_PREFIX'])
-    print("Loaded environment variables:", env_vars)
-except ValueError as e:
-    print("Error:", str(e))
-    sys.exit(1)
+env_vars = env.get_required_env_variables(['IP_PREFIX'])
 
 def is_webserver_running(ip):
     try:

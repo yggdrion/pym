@@ -28,19 +28,20 @@ def a2s_info(name, host, port):
         return_dict['player_count'] = info.player_count
         return_dict['map_name'] = info.map_name
         return_dict['game_mode'] = rules['GameMode_s']
-        return_dict['team_one'] = rules['TeamOne_s']
-        return_dict['team_two'] = rules['TeamTwo_s']
+        return_dict['team_one'] = rules['TeamOne_s'].split("_")[-1]
+        return_dict['team_two'] = rules['TeamTwo_s'].split("_")[-1]
         
-        # for i in return_dict:
-        #     print(f"{i}: {return_dict[i]}")
-        # print("#######################")        
+        for i in return_dict:
+            print(f"{i}: {return_dict[i]}")
+        print("#######################")        
+
+        #print(return_dict)
 
         return return_dict
     
-    except:
+    except Exception as e:
+        print(e)
         return None
-
-
 
 if __name__ == "__main__":
 
@@ -69,5 +70,4 @@ if __name__ == "__main__":
             tags = {'name': data['name']}
             fields = {'player_count': data['player_count']}
             influx.write(measurement, tags, fields)
-            
         time.sleep(30)
