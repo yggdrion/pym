@@ -1,38 +1,13 @@
 import a2s
 import yaml
 from concurrent.futures import ThreadPoolExecutor
-import os
-import sys
-from dotenv import load_dotenv
-from influxdb import InfluxDBClient
 import time
+from src import influx
 
-# use dotenv to load environment variables from .env file
-if os.path.exists(".env"):
-    load_dotenv()
-
-# load environment variables
-def get_required_env_variables(var_names):
-    env_vars = {}
-    for var_name in var_names:
-        try:
-            env_vars[var_name] = os.environ[var_name]
-        except KeyError:
-            raise ValueError(f"Required environment variable '{var_name}' is not set.")
-    return env_vars
-
-# get required environment variables
-try:
-    env_vars = get_required_env_variables(['INFLUX_HOST', 'INFLUX_PORT', 'INFLUX_DB'])
-    print("Loaded environment variables:", env_vars)
-except ValueError as e:
-    print("Error:", str(e))
-    sys.exit(1)
-
-
-def a2s_info(host, port):
+def a2s_info(name, host, port):
     return_dict = {}
     try:
+        #print(f"Getting info for {name} - {host}:{port}")
         address = (host, port)
         info = a2s.info(address, timeout=10)
         # print(f"Got info for {host}:{port}")
@@ -48,38 +23,25 @@ def a2s_info(host, port):
         #for player in players:
             #print(player.name)
 
+        return_dict['name'] = name
         return_dict['server_name'] = info.server_name
         return_dict['player_count'] = info.player_count
+        return_dict['map_name'] = info.map_name
+        return_dict['game_mode'] = rules['GameMode_s']
+        return_dict['team_one'] = rules['TeamOne_s'].split("_")[-1]
+        return_dict['team_two'] = rules['TeamTwo_s'].split("_")[-1]
+        
+        # for i in return_dict:
+        #     print(f"{i}: {return_dict[i]}")
+        # print("#######################")        
+
+        #print(return_dict)
+
         return return_dict
     
-    except:
+    except Exception as e:
+        print(e)
         return None
-
-
-def influx_write(name, player_count):
-    host = env_vars['INFLUX_HOST']
-    port = env_vars['INFLUX_PORT']
-    database = env_vars['INFLUX_DB'] 
-
-    client = InfluxDBClient(host=host, port=port)
-    client.switch_database(database)
-
-    measurement = 'squad_player_count' 
-    tags = {'name': name}
-
-    fields = {'player_count': player_count}
-
-    data = [
-        {
-            "measurement": measurement,
-            "tags": tags,
-            "fields": fields
-        }
-    ]
-
-    client.write_points(data)
-
-    client.close()
 
 if __name__ == "__main__":
 
@@ -88,24 +50,24 @@ if __name__ == "__main__":
 
 
     while True:
-        devices = yaml_data['devices']
+        server_list = yaml_data['devices']
 
         squad_data = []
 
         print("Squad: Thread")
         with ThreadPoolExecutor(max_workers=3) as executor:
-            for device in devices:
-                thread_return = executor.submit(a2s_info, device['ip'], device['port'])
+            for server in server_list:
+                thread_return = executor.submit(a2s_info, server['name'], server['ip'], server['port'])
                 if thread_return.result() is None:
-                    print(f"Error: {device['name']}")
+                    print(f"Error: {server['name']}")
                     continue
-                tmp_dict = thread_return.result()
-                tmp_dict['name'] = device['name']
-                squad_data.append(tmp_dict)
+                squad_data.append(thread_return.result())
 
         print("Squad: Influx")
         for data in squad_data:
-            # print(f"{data['name']}: {data['player_count']}")
-            influx_write(data['name'], data['player_count'])
-            
+            #print(data)
+            measurement = 'squad'
+            tags = {'name': data['name']}
+            fields = {'player_count': data['player_count']}
+            influx.write(measurement, tags, fields)
         time.sleep(30)

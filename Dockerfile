@@ -9,6 +9,7 @@ WORKDIR /app
 
 # Copy the Python files to the container
 COPY *.py /app/
+COPY src /app/src/
 
 # Copy the requirements file to the container
 COPY requirements.txt /app/
