@@ -59,7 +59,7 @@ jobs:
 
       - name: Build and push container image
         if: ${{ github.event_name == 'push' }}
-        uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09
+        uses: docker/build-push-action@4a13e500e55cf31b7a5d59a38ab2040ab0f42f56
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
@@ -69,7 +69,7 @@ jobs:
 
       - name: Build and push container image
         if: ${{ github.event_name == 'release' && github.event.action == 'created' }}
-        uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09
+        uses: docker/build-push-action@4a13e500e55cf31b7a5d59a38ab2040ab0f42f56
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
